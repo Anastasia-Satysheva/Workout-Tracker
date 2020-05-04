@@ -6,8 +6,10 @@ const bodyParser = require("body-parser")
 const api = require("./routes/api")
 const db = require('./config/database').MongoURI
 
+const PORT = process.env.PORT || 8000;
 
-mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
+
+mongoose.connect(process.env.MONGODB_URI || db, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Mongoose Connected...'))
     .catch(err => console.log(err))
 
@@ -15,7 +17,9 @@ mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, "public")));
+
+if (process.env.NODE_ENV === "production")
+    app.use(express.static(path.join(__dirname, "public")));
 
 
 app.use("/api", api);
